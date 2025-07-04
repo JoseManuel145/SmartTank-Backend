@@ -42,7 +42,7 @@ def create_reading(
     asyncio.create_task(manager.broadcast(reading.model_dump()))
     return reading
 
-"""
+
 # Ruta de WebSocket para enviar datos en tiempo real a los clientes
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -52,4 +52,3 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()  # Mantiene la conexión abierta
     except WebSocketDisconnect:
             manager.disconnect(websocket)
-"""

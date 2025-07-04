@@ -13,9 +13,10 @@ class RabbitConsumer:
         self.connection = None
         self.channel = None
         self.queue_name = None
+        credentials = pika.PlainCredentials(os.getenv("RABBIT_USER"), os.getenv("RABBIT_PASSWORD")) 
 
         try:
-            self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host))
+            self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host, port=5672, credentials=credentials))
         except Exception as e:
             print(f"[RabbitMQ] Error al conectar con RabbitMQ en {self.host}: {e}")
             raise
