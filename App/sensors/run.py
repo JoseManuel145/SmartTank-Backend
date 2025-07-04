@@ -9,6 +9,7 @@ from App.core.mysql import SessionLocal
 from App.core.websocket import manager
 
 def process_message(ch, method, properties, body):
+    print(f"[RabbitMQ] Mensaje recibido: {body}")
     try:
         data = json.loads(body)
         db = SessionLocal()

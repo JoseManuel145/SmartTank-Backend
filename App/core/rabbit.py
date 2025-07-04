@@ -7,9 +7,9 @@ load_dotenv()
 
 class RabbitConsumer:
     def __init__(self, host=None, exchange=None, binding_keys=None):
-        self.host = host or os.getenv("RABBIT_HOST", "localhost")
-        self.exchange = exchange or os.getenv("RABBIT_EXCHANGE", "topic_logs")
-        self.binding_keys = binding_keys or os.getenv("RABBIT_BINDING_KEYS", "#").split(",")
+        self.host = host or os.getenv("RABBIT_HOST")
+        self.exchange = exchange or os.getenv("RABBIT_EXCHANGE")
+        self.binding_keys = binding_keys or os.getenv("RABBIT_BINDING_KEYS").split(",")
         self.connection = None
         self.channel = None
         self.queue_name = None
