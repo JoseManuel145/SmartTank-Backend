@@ -21,16 +21,14 @@ class UserService:
             raise ValueError("User not found")
         return UserResponse.from_orm(user)
 
-    def register_user(self, data: UserCreate) -> LoginResponse:
+    def register_user(self, data: UserCreate) -> UserResponse:
         # Genera un UUID para el nuevo usuario y hashea la contraseña
         id = uuid.generate_uuid()
         hashed_password = password.hash_password(data.password)
         # Crea una copia del modelo con los datos actualizados
         user_data = data.model_copy(update={"password": hashed_password, "id_user": id})
         user = self.repo.create(user_data)
-        
-        token = create_access_token({"sub": user.id_user})
-        return LoginResponse(user=UserResponse.from_orm(user), access_token=token)
+        return UserResponse.from_orm(user)
 
     def login_user(self, email: str, password_request: str) -> LoginResponse:
         # Obtiene el usuario por email

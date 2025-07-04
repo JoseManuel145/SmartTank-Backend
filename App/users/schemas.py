@@ -9,8 +9,6 @@ class UserCreate(UserBase):
     password: str
 
 class UserResponse(UserBase):
-    id_user: str
-
     model_config = {
         "from_attributes": True
     }
@@ -22,7 +20,7 @@ class LoginRequest(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    user: UserResponse
+    id_user: str
     
 class UserUpdate(BaseModel):
     current_password: str
