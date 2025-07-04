@@ -22,7 +22,7 @@ class RabbitConsumer:
 
         try:
             self.channel = self.connection.channel()
-            self.channel.exchange_declare(exchange=self.exchange, exchange_type='topic')
+            self.channel.exchange_declare(exchange=self.exchange, exchange_type='topic', durable=True)
         except Exception as e:
             print(f"[RabbitMQ] Error al declarar el exchange '{self.exchange}': {e}")
             self.close()
