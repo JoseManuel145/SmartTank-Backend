@@ -38,7 +38,7 @@ def process_message(ch, method, properties, body):
 
 
 def start_rabbit_consumer():
-    consumer = RabbitConsumer(binding_keys=['#'])
+    consumer = RabbitConsumer()
     consumer.start_consuming(process_message)
 
 def run():
