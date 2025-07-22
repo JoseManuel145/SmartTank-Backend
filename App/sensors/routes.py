@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import asyncio
 
-from .schemas import ReadingCreate, ReadingResponse
+from .schemas import ReadingCreate, ReadingResponse, WaterQualityResponse
 from .repository import SensorRepository
 from .service import SensorService
 from App.core.mysql import get_db
@@ -42,6 +42,14 @@ def create_reading(
     asyncio.create_task(manager.broadcast(reading.model_dump()))
     return reading
 
+@router.get("/water-quality", response_model=WaterQualityResponse)
+def get_water_quality(
+    service: SensorService = Depends(get_sensor_service)
+):
+    result = service.evaluate_water_quality()
+    # Notifica a todos los clientes websocket con la evaluación de calidad del agua
+    asyncio.create_task(manager.broadcast(result.model_dump()))
+    return result
 
 # Ruta de WebSocket para enviar datos en tiempo real a los clientes
 @router.websocket("/ws")

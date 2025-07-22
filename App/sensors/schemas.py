@@ -16,3 +16,12 @@ class ReadingResponse(ReadingBase):
     model_config = {
     "from_attributes": True
     }
+
+class WaterQualityObservation(BaseModel):
+    sensor: str
+    status: str
+
+class WaterQualityResponse(BaseModel):
+    quality: str
+    quality_value: float
+    observations: list[WaterQualityObservation]
