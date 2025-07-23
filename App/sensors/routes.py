@@ -42,14 +42,19 @@ def create_reading(
     asyncio.create_task(manager.broadcast(reading.model_dump()))
     return reading
 
-@router.get("/water-quality", response_model=WaterQualityResponse)
-def get_water_quality(
-    service: SensorService = Depends(get_sensor_service)
-):
-    result = service.evaluate_water_quality()
-    # Notifica a todos los clientes websocket con la evaluación de calidad del agua
-    asyncio.create_task(manager.broadcast(result.model_dump()))
-    return result
+# Ruta para evaluar la calidad del agua
+@router.websocket("/water-quality")
+async def websocket_water_quality(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Espera a que el cliente envíe un mensaje (puede ser cualquier texto)
+            await websocket.receive_text()
+            # Calcula la calidad del agua y la envía al cliente
+            result = get_sensor_service().evaluate_water_quality()
+            await websocket.send_json(result.model_dump())
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 # Ruta de WebSocket para enviar datos en tiempo real a los clientes
 @router.websocket("/values")
