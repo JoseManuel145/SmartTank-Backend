@@ -52,7 +52,7 @@ def get_water_quality(
     return result
 
 # Ruta de WebSocket para enviar datos en tiempo real a los clientes
-@router.websocket("/ws")
+@router.websocket("/values")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:

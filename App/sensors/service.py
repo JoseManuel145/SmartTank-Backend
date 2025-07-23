@@ -21,6 +21,8 @@ class SensorService:
             raise ValueError("Reading not found")
         return ReadingResponse.model_validate(reading)
 
+    
+
     def evaluate_water_quality(self, n: int = 100) -> WaterQualityResponse:
         # Obtener las últimas n lecturas
         readings = self.repo.get_last_n(n)
