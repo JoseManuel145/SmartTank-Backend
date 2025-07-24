@@ -103,3 +103,12 @@ async def websocket_float(websocket: WebSocket):
             await websocket.send_json(flotador.model_dump())
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+        
+@router.websocket("/ws")
+async def websocket(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
