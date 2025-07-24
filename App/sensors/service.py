@@ -61,7 +61,8 @@ class SensorService:
             sensor_values[r.sensor].append(r.data.get('value', 0))
 
         observations = []
-        quality_score = 0
+        points = 0
+        max_points = 2 * total_sensors  # 2 puntos por cada sensor
         total_sensors = 3  # ph, turbidez, conductividad
 
         # Evaluar pH
@@ -70,11 +71,12 @@ class SensorService:
             ph_avg = sum(ph_values) / len(ph_values)
             if 6.5 <= ph_avg <= 8.5:
                 observations.append(WaterQualityObservation(sensor='ph', status='Normal'))
-                quality_score += 1
-            elif ph_avg < 6.5:
-                observations.append(WaterQualityObservation(sensor='ph', status='Bajo'))
+                points += 2
+            elif ph_avg < 6.5 or ph_avg > 8.5:
+                observations.append(WaterQualityObservation(sensor='ph', status='Aceptable'))
+                points += 1
             else:
-                observations.append(WaterQualityObservation(sensor='ph', status='Alto'))
+                observations.append(WaterQualityObservation(sensor='ph', status='Alto/Bajo'))
         else:
             observations.append(WaterQualityObservation(sensor='ph', status='No data'))
 
@@ -84,10 +86,10 @@ class SensorService:
             turbidez_avg = sum(turbidez_values) / len(turbidez_values)
             if turbidez_avg <= 1:
                 observations.append(WaterQualityObservation(sensor='turbidez', status='Perfecta'))
-                quality_score += 1
+                points += 2
             elif 0 < turbidez_avg <= 5:
                 observations.append(WaterQualityObservation(sensor='turbidez', status='Aceptable'))
-                quality_score += 1
+                points += 1
             else:
                 observations.append(WaterQualityObservation(sensor='turbidez', status='Alta'))
         else:
@@ -99,22 +101,25 @@ class SensorService:
             conductividad_avg = sum(conductividad_values) / len(conductividad_values)
             if 50 <= conductividad_avg <= 1500:
                 observations.append(WaterQualityObservation(sensor='conductividad electrica', status='Normal'))
-                quality_score += 1
-            elif conductividad_avg < 50:
-                observations.append(WaterQualityObservation(sensor='conductividad electrica', status='Muy baja'))
+                points += 2
+            elif conductividad_avg < 50 or conductividad_avg > 1500:
+                observations.append(WaterQualityObservation(sensor='conductividad electrica', status='Aceptable'))
+                points += 1
             else:
-                observations.append(WaterQualityObservation(sensor='conductividad electrica', status='Alta'))
+                observations.append(WaterQualityObservation(sensor='conductividad electrica', status='Alta/Muy baja'))
         else:
             observations.append(WaterQualityObservation(sensor='conductividad electrica', status='No data'))
 
         # Determinar calidad general
-        if quality_score == total_sensors:
+        if points == max_points:
             quality = 'Buena'
+        elif points >= max_points * 0.5:
+            quality = 'Regular'
         else:
-            quality = 'Regular o Mala'
+            quality = 'Mala'
 
-        # Calcular valor numérico para frontend (porcentaje de sensores normales)
-        quality_value = (quality_score / total_sensors) * 100
+        # Calcular valor numérico para frontend (porcentaje más granular)
+        quality_value = int((points / max_points) * 100)
 
         return WaterQualityResponse(
             quality=quality,
