@@ -37,19 +37,19 @@ class SensorService:
         reading = self.repo.get_last_ph()
         if not reading:
             raise ValueError("No readings found for pH sensor")
-        return ReadingResponse.model_validate(reading)
+        return reading
     
     def get_last_turbidity_reading(self) -> ReadingResponse:
         reading = self.repo.get_last_turbidity()
         if not reading:
             raise ValueError("No readings found for turbidity sensor")
-        return ReadingResponse.model_validate(reading)
+        return reading
     
     def get_last_conductivity_reading(self) -> ReadingResponse:
         reading = self.repo.get_last_conductivity()
         if not reading:
             raise ValueError("No readings found for conductivity sensor")
-        return ReadingResponse.model_validate(reading)
+        return reading
     
     def evaluate_water_quality(self, n: int = 100) -> WaterQualityResponse:
         # Obtener las últimas n lecturas

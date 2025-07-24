@@ -17,20 +17,10 @@ def get_sensor_service(db: Session = Depends(get_db)) -> SensorService:
 
 @router.get("/", response_model=List[ReadingResponse])
 def get_last_readings(
-    n: int = 30,
     service: SensorService = Depends(get_sensor_service)
 ):
-    return service.get_last_n_readings(n)
+    return service.get_last_n_readings(10)
 
-@router.get("/{id_reading}", response_model=ReadingResponse)
-def get_reading_by_id(
-    id_reading: int,
-    service: SensorService = Depends(get_sensor_service)
-):
-    try:
-        return service.get_reading_by_id(id_reading)
-    except ValueError:
-        raise HTTPException(status_code=404, detail="Reading not found")
 
 @router.post("/", response_model=ReadingResponse, status_code=status.HTTP_201_CREATED)
 def create_reading(
