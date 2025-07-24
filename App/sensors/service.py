@@ -126,3 +126,24 @@ class SensorService:
             quality_value=quality_value,
             observations=observations
         )
+
+    def get_avg_ph(self, n: int = 100) -> float:
+        readings = self.repo.get_last_n(n)
+        ph_values = [r.data.get('value', 0) for r in readings if r.sensor == 'ph']
+        if not ph_values:
+            raise ValueError("No readings found for pH sensor")
+        return sum(ph_values) / len(ph_values)
+
+    def get_avg_turbidity(self, n: int = 100) -> float:
+        readings = self.repo.get_last_n(n)
+        turbidity_values = [r.data.get('value', 0) for r in readings if r.sensor == 'turbidez']
+        if not turbidity_values:
+            raise ValueError("No readings found for turbidity sensor")
+        return sum(turbidity_values) / len(turbidity_values)
+
+    def get_avg_conductivity(self, n: int = 100) -> float:
+        readings = self.repo.get_last_n(n)
+        conductivity_values = [r.data.get('value', 0) for r in readings if r.sensor == 'conductividad electrica']
+        if not conductivity_values:
+            raise ValueError("No readings found for conductivity sensor")
+        return sum(conductivity_values) / len(conductivity_values)

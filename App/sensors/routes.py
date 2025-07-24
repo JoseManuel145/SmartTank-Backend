@@ -15,13 +15,14 @@ def get_sensor_service(db: Session = Depends(get_db)) -> SensorService:
     repo = SensorRepository(db)
     return SensorService(repo)
 
+# Obtener las últimas n lecturas
 @router.get("/", response_model=List[ReadingResponse])
 def get_last_readings(
     service: SensorService = Depends(get_sensor_service)
 ):
     return service.get_last_n_readings(10)
 
-
+# Crear una nueva lectura
 @router.post("/", response_model=ReadingResponse, status_code=status.HTTP_201_CREATED)
 def create_reading(
     data: ReadingCreate,
@@ -31,6 +32,8 @@ def create_reading(
     # Notifica a todos los clientes websocket con la nueva lectura
     asyncio.create_task(manager.broadcast(reading.model_dump()))
     return reading
+
+# Obtener la última lectura del sensor ph
 @router.get("/ph", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
 def get_last_ph_reading(
     service: SensorService = Depends(get_sensor_service)
@@ -39,7 +42,8 @@ def get_last_ph_reading(
         return service.get_last_ph_reading()
     except ValueError:
         raise HTTPException(status_code=404, detail="No readings found for pH sensor")
-    
+
+# Obtener la última lectura del sensor de turbidez
 @router.get("/turbidity", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
 def get_last_turbidity_reading(
     service: SensorService = Depends(get_sensor_service)
@@ -49,6 +53,7 @@ def get_last_turbidity_reading(
     except ValueError:
         raise HTTPException(status_code=404, detail="No readings found for turbidity sensor")
 
+# Obtener la última lectura del sensor de conductividad
 @router.get("/conductivity", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
 def get_last_conductivity_reading(
     service: SensorService = Depends(get_sensor_service)
@@ -57,6 +62,30 @@ def get_last_conductivity_reading(
         return service.get_last_conductivity_reading()
     except ValueError:
         raise HTTPException(status_code=404, detail="No readings found for conductivity sensor")
+
+# Obtener el promedio del sensor de ph
+@router.get("/ph/avg", response_model=float)
+def get_avg_ph(service: SensorService = Depends(get_sensor_service)):
+    try:
+        return service.get_avg_ph()
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+# Obtener el promedio del sensor de turbidez
+@router.get("/turbidity/avg", response_model=float)
+def get_avg_turbidity(service: SensorService = Depends(get_sensor_service)):
+    try:
+        return service.get_avg_turbidity()
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+# Obtener el promedio del sensor de conductividad
+@router.get("/conductivity/avg", response_model=float)
+def get_avg_conductivity(service: SensorService = Depends(get_sensor_service)):
+    try:
+        return service.get_avg_conductivity()
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 # Ruta para evaluar la calidad del agua
 @router.websocket("/water-quality")
