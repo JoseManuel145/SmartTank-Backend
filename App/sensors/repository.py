@@ -31,3 +31,21 @@ class SensorRepository:
     def get_by_id(self, id_reading: int) -> Optional[Reading]:
         # Busca un registro por su id
         return self.db.query(Reading).filter(Reading.id_reading == id_reading).first()
+    
+    def get_readings_bombs(self) -> Optional[Reading]:
+        # Devuelve la última lectura de la bomba de agua
+        return (
+            self.db.query(Reading)
+            .filter(Reading.sensor == 'bomba_agua')
+            .order_by(Reading.date.desc())
+            .first()
+        )
+
+    def get_readings_float(self) -> Optional[Reading]:
+        # Devuelve la última lectura del sensor de flotación
+        return (
+            self.db.query(Reading)
+            .filter(Reading.sensor == 'flotador')
+            .order_by(Reading.date.desc())
+            .first()
+        )

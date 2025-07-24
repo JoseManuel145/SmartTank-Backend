@@ -56,12 +56,24 @@ async def websocket_water_quality(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-# Ruta de WebSocket para enviar datos en tiempo real a los clientes
-@router.websocket("/values")
-async def websocket_endpoint(websocket: WebSocket):
+@router.websocket("/water-bomb")
+async def websocket_water_bomb(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()  # Mantiene la conexión abierta
+            await websocket.receive_text()
+            bomb = get_sensor_service().get_readings_water_bomb()
+            await websocket.send_json(bomb.model_dump())
     except WebSocketDisconnect:
-            manager.disconnect(websocket)
+        manager.disconnect(websocket)
+
+@router.websocket("/water-float")
+async def websocket_float(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+            flotador = get_sensor_service().get_readings_float()
+            await websocket.send_json(flotador.model_dump())
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
