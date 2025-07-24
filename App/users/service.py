@@ -31,14 +31,16 @@ class UserService:
         return UserResponse.from_orm(user)
 
     def login_user(self, email: str, password_request: str) -> LoginResponse:
-        # Obtiene el usuario por email
         user = self.repo.get_by_email(email)
-        # Comprueba si el usuario existe y si la contraseña es correcta
         if not user or not password.verify_password(password_request, user.password):
             raise ValueError("Invalid email or password")
-        
+
         token = create_access_token({"sub": user.id_user})
-        return LoginResponse(user=UserResponse.from_orm(user), access_token=token)
+        
+        return LoginResponse(
+            id_user=user.id_user,
+            access_token=token
+        )
 
     def update_user(self, id_user: str, data: UserUpdate, current_password: str) -> UserResponse:
         # Busca el usuario existente
