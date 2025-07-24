@@ -62,8 +62,8 @@ class SensorService:
 
         observations = []
         points = 0
-        max_points = 2 * total_sensors  # 2 puntos por cada sensor
         total_sensors = 3  # ph, turbidez, conductividad
+        max_points = 2 * total_sensors  # 2 puntos por cada sensor
 
         # Evaluar pH
         ph_values = sensor_values.get('ph', [])
