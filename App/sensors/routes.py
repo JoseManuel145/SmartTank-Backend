@@ -41,6 +41,32 @@ def create_reading(
     # Notifica a todos los clientes websocket con la nueva lectura
     asyncio.create_task(manager.broadcast(reading.model_dump()))
     return reading
+@router.get("/ph", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
+def get_last_ph_reading(
+    service: SensorService = Depends(get_sensor_service)
+):
+    try:
+        return service.get_last_ph_reading()
+    except ValueError:
+        raise HTTPException(status_code=404, detail="No readings found for pH sensor")
+    
+@router.get("/turbidity", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
+def get_last_turbidity_reading(
+    service: SensorService = Depends(get_sensor_service)
+):
+    try:
+        return service.get_last_turbidity_reading()
+    except ValueError:
+        raise HTTPException(status_code=404, detail="No readings found for turbidity sensor")
+
+@router.get("/conductivity", response_model=ReadingResponse, status_code=status.HTTP_200_OK)
+def get_last_conductivity_reading(
+    service: SensorService = Depends(get_sensor_service)
+):
+    try:
+        return service.get_last_conductivity_reading()
+    except ValueError:
+        raise HTTPException(status_code=404, detail="No readings found for conductivity sensor")
 
 # Ruta para evaluar la calidad del agua
 @router.websocket("/water-quality")

@@ -49,3 +49,30 @@ class SensorRepository:
             .order_by(Reading.date.desc())
             .first()
         )
+        
+    def get_last_ph(self) -> Optional[Reading]:
+        # Devuelve la última lectura del sensor de pH
+        return (
+            self.db.query(Reading)
+            .filter(Reading.sensor == 'ph')
+            .order_by(Reading.date.desc())
+            .first()
+        )
+        
+    def get_last_turbidity(self) -> Optional[Reading]:
+        # Devuelve la última lectura del sensor de turbidez
+        return (
+            self.db.query(Reading)
+            .filter(Reading.sensor == 'turbidez')
+            .order_by(Reading.date.desc())
+            .first()
+        )
+    
+    def get_last_conductivity(self) -> Optional[Reading]:
+        # Devuelve la última lectura del sensor de conductividad
+        return (
+            self.db.query(Reading)
+            .filter(Reading.sensor == 'conductividad_electrica')
+            .order_by(Reading.date.desc())
+            .first()
+        )
